@@ -70,23 +70,23 @@ body {
     left: 50%; 
     transform: translateX(-50%); 
     
-    font-size: 20px;
+    font-size: 30px;
     font-weight: bold;
-    color: rgb(255, 5, 5);
-    text-shadow: 1px 1px 3px white, -1px -1px 3px white; 
+    color: rgb(255, 255, 255);
+    text-shadow: 1px 1px 3px rgb(0, 0, 0), -1px -1px 3px rgb(0, 0, 0); 
     pointer-events: none; 
     z-index: 12;
 }
 
 /* Posisi Nama di atas Ikon */
 .peserta-label.name {
-    top: -90px; 
+    top: -110px; 
 }
 
 /* Posisi MDPL di bawah Nama */
 .peserta-label.mdpl {
     top: -30px; 
-    font-size: 16px;
+    font-size: 20px;
     font-weight: normal;
 }
 
