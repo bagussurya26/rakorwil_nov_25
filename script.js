@@ -9,13 +9,13 @@ const HORIZONTAL_UNIT = 180; // Satuan pergeseran horizontal (untuk normalisasi 
 
 // Data peserta, kini memiliki kontrol kemiringan individu (DATA PATEN)
 let participants = [
-    { id: 1, name: 'Adi', elevation: BASE_ELEVATION, xPos: '5%', imgFile: 'karakter_1.png', horizontalPx: 10, direction: 5 }, 
-    { id: 2, name: 'Budi', elevation: BASE_ELEVATION, xPos: '19%', imgFile: 'karakter_2.png', horizontalPx: 6, direction: 5 }, 
-    { id: 3, name: 'Cici', elevation: BASE_ELEVATION, xPos: '33%', imgFile: 'karakter_3.png', horizontalPx: 3, direction: 4.5 }, 
-    { id: 4, name: 'Dina', elevation: BASE_ELEVATION, xPos: '47%', imgFile: 'karakter_4.png', horizontalPx: 0, direction: 0 }, 
-    { id: 5, name: 'Eko', elevation: BASE_ELEVATION, xPos: '61%', imgFile: 'karakter_5.png', horizontalPx: 3, direction: -4.5 }, 
-    { id: 6, name: 'Fani', elevation: BASE_ELEVATION, xPos: '75%', imgFile: 'karakter_6.png', horizontalPx: 6, direction: -4.3 }, 
-    { id: 7, name: 'Gita', elevation: BASE_ELEVATION, xPos: '89%', imgFile: 'karakter_7.png', horizontalPx: 10, direction: -4.5 } 
+    { id: 1, name: 'Tim Gn. Ciremai', elevation: BASE_ELEVATION, xPos: '5%', imgFile: 'ciremai.png', horizontalPx: 10, direction: 5 }, 
+    { id: 2, name: 'Tim Gn. Guntur', elevation: BASE_ELEVATION, xPos: '19%', imgFile: 'guntur.png', horizontalPx: 6, direction: 5 }, 
+    { id: 3, name: 'Tim Gn. Gede', elevation: BASE_ELEVATION, xPos: '33%', imgFile: 'gede.png', horizontalPx: 3, direction: 4.5 }, 
+    { id: 4, name: 'Tim Gn. Cikuray', elevation: BASE_ELEVATION, xPos: '47%', imgFile: 'cikuray.png', horizontalPx: 0, direction: 0 }, 
+    { id: 5, name: 'Tim Gn. Papandayan', elevation: BASE_ELEVATION, xPos: '61%', imgFile: 'papandayan.png', horizontalPx: 3, direction: -4.5 }, 
+    { id: 6, name: 'Tim Gn. Tangkuban', elevation: BASE_ELEVATION, xPos: '75%', imgFile: 'tangkuban.png', horizontalPx: 6, direction: -4.3 }, 
+    { id: 7, name: 'Tim Gn. Malabar', elevation: BASE_ELEVATION, xPos: '89%', imgFile: 'malabar.png', horizontalPx: 10, direction: -4.5 } 
 ];
 
 // ====================================================
