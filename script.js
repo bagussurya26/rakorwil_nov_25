@@ -1,54 +1,77 @@
-// Ketinggian dan Visual Konstan (REVISI MAX MDPL)
+// Ketinggian dan Visual Konstan (DATA PATEN)
 const BASE_ELEVATION = 1000; 
-const MAX_ELEVATION = 3600; // BATAS MAKSIMAL MDPL BARU
-const ELEVATION_INCREMENT = 180; // Naik 100 mdpl per klik
+const MAX_ELEVATION = 3600; 
+const ELEVATION_INCREMENT = 180; 
 
-// Visual Mapping: 
-// Total langkah: (3600 - 1000) / 100 = 26 langkah
-const PIXELS_PER_100_MDPL = 40; // Disesuaikan agar total pergerakan vertikal tetap muat di layar
-// Jika 26 langkah * 20px/langkah = 520px total pergerakan vertikal
-// Anda mungkin perlu menyesuaikan nilai ini bersama dengan 'bottom: 180px;' di CSS
+// Visual Mapping (DATA PATEN): 
+const PIXELS_PER_100_MDPL = 40; 
+const HORIZONTAL_UNIT = 180; // Satuan pergeseran horizontal (untuk normalisasi perhitungan X dan Y)
 
-// Data peserta, kini memiliki kontrol kemiringan individu
+// Data peserta, kini memiliki kontrol kemiringan individu (DATA PATEN)
 let participants = [
-    { id: 1, name: 'Adi', elevation: BASE_ELEVATION, xPos: '5%', imgFile: 'karakter_1.png', horizontalPx: 10, direction: 5 }, // Paling miring (ke Kanan)
+    { id: 1, name: 'Adi', elevation: BASE_ELEVATION, xPos: '5%', imgFile: 'karakter_1.png', horizontalPx: 10, direction: 5 }, 
     { id: 2, name: 'Budi', elevation: BASE_ELEVATION, xPos: '19%', imgFile: 'karakter_2.png', horizontalPx: 6, direction: 5 }, 
     { id: 3, name: 'Cici', elevation: BASE_ELEVATION, xPos: '33%', imgFile: 'karakter_3.png', horizontalPx: 3, direction: 4.5 }, 
-    { id: 4, name: 'Dina', elevation: BASE_ELEVATION, xPos: '47%', imgFile: 'karakter_4.png', horizontalPx: 0, direction: 0 }, // Lurus
+    { id: 4, name: 'Dina', elevation: BASE_ELEVATION, xPos: '47%', imgFile: 'karakter_4.png', horizontalPx: 0, direction: 0 }, 
     { id: 5, name: 'Eko', elevation: BASE_ELEVATION, xPos: '61%', imgFile: 'karakter_5.png', horizontalPx: 3, direction: -4.5 }, 
     { id: 6, name: 'Fani', elevation: BASE_ELEVATION, xPos: '75%', imgFile: 'karakter_6.png', horizontalPx: 6, direction: -4.3 }, 
-    { id: 7, name: 'Gita', elevation: BASE_ELEVATION, xPos: '89%', imgFile: 'karakter_7.png', horizontalPx: 10, direction: -4.5 } // Paling miring (ke Kiri)
+    { id: 7, name: 'Gita', elevation: BASE_ELEVATION, xPos: '89%', imgFile: 'karakter_7.png', horizontalPx: 10, direction: -4.5 } 
 ];
 
-// ----------------------------------------------------
-// Fungsi untuk menghitung pergeseran Horizontal (X)
-// ----------------------------------------------------
+// ====================================================
+// --- FUNGSI BARU: AUDIO UTILITY ---
+// ====================================================
+
+/**
+ * Memutar elemen audio berdasarkan ID.
+ * @param {string} audioId - ID dari elemen <audio> (misal: 'sound-click').
+ */
+function playSound(audioId) {
+    const audio = document.getElementById(audioId);
+    if (audio) {
+        // Reset waktu putar ke awal (agar bisa diputar berkali-kali dengan cepat)
+        audio.currentTime = 0; 
+        audio.play().catch(error => {
+            // Log error jika browser memblokir pemutaran otomatis
+            console.warn("Audio Playback Error:", error);
+        });
+    }
+}
+
+// ====================================================
+// --- LOGIKA PERGERAKAN ---
+// ====================================================
+
 function calculateXOffset(stepCount, xPosBase, participant) {
     // Total piksel pergeseran dihitung menggunakan data 'horizontalPx' dan 'direction'
-    const totalOffset = stepCount * participant.horizontalPx * participant.direction;
-    
-    // Gunakan fungsi calc() CSS untuk menambahkan offset piksel ke persentase dasar
+    // Perhitungan di bawah menyesuaikan dengan ELEVATION_INCREMENT 180
+    const normalizedSteps = (stepCount * ELEVATION_INCREMENT) / HORIZONTAL_UNIT;
+
+    const totalOffset = normalizedSteps * participant.horizontalPx * participant.direction;
     return `calc(${xPosBase} + ${totalOffset}px)`;
 }
 
-
-// ----------------------------------------------------
-// Fungsi untuk menghitung posisi vertikal (Y)
-// ----------------------------------------------------
 function calculateYPosition(elevation) {
-    // Hitung berapa kali kenaikan (100 mdpl) yang sudah dicapai
-    const stepCount = (elevation - BASE_ELEVATION) / ELEVATION_INCREMENT; 
-    return `translateY(-${stepCount * PIXELS_PER_100_MDPL}px)`;
+    // Total MDPL yang dicapai sejak BASE_ELEVATION
+    const totalElevationGain = elevation - BASE_ELEVATION;
+
+    // Kenaikan visual dihitung berdasarkan PIXELS_PER_100_MDPL (40px per 100 mdpl)
+    const verticalOffset = (totalElevationGain / HORIZONTAL_UNIT) * PIXELS_PER_100_MDPL;
+    
+    return `translateY(-${verticalOffset}px)`;
 }
 
-// ----------------------------------------------------
-// Fungsi yang dipanggil saat ikon diklik
-// ----------------------------------------------------
 function handleIconClick(id) {
     const participant = participants.find(p => p.id === id);
 
     if (participant && participant.elevation < MAX_ELEVATION) {
         
+        // 🚨 Suara 1: Klik Biasa
+        playSound('sound-click'); 
+
+        // Cek apakah klik ini akan mencapai puncak
+        const willReachMax = (participant.elevation + ELEVATION_INCREMENT) >= MAX_ELEVATION;
+
         // 1. Update Data Ketinggian (dibatasi hingga MAX_ELEVATION)
         participant.elevation = Math.min(participant.elevation + ELEVATION_INCREMENT, MAX_ELEVATION);
 
@@ -68,19 +91,67 @@ function handleIconClick(id) {
         elevationDisplay.textContent = `${participant.elevation} mdpl`;
 
         // Logika Puncak
-        if (participant.elevation === MAX_ELEVATION) {
+        if (participant.elevation === MAX_ELEVATION && willReachMax) {
+            // 🚨 Suara 2: Mencapai Puncak
+            playSound('sound-puncak'); 
+
             elevationDisplay.textContent = `PUNCAK! ${MAX_ELEVATION} mdpl`;
             iconElement.style.boxShadow = '0 0 15px 5px gold'; 
             iconElement.style.cursor = 'default'; 
-            // Hentikan event listener
-            iconElement.removeEventListener('click', handleIconClick);
+            
+            // Hapus event listener untuk mencegah klik ganda pada puncak
+            // Gunakan cloneNode untuk mereplace element agar event lama hilang
+            const newIcon = iconElement.cloneNode(true);
+            iconElement.parentNode.replaceChild(newIcon, iconElement);
         }
     }
 }
 
-// ----------------------------------------------------
-// Fungsi untuk merender seluruh Scoreboard
-// ----------------------------------------------------
+// ====================================================
+// --- LOGIKA RANKING DAN MODAL ---
+// ====================================================
+
+/**
+ * Mengurutkan peserta berdasarkan ketinggian (tertinggi ke terendah) dan merender ke modal.
+ */
+function renderRanking() {
+    // 1. Salin dan Urutkan peserta berdasarkan elevation
+    const sortedParticipants = [...participants].sort((a, b) => b.elevation - a.elevation);
+    
+    const rankingList = document.getElementById('ranking-list');
+    rankingList.innerHTML = ''; // Bersihkan daftar lama
+
+    sortedParticipants.forEach((p, index) => {
+        const rankDiv = document.createElement('div');
+        rankDiv.innerHTML = `
+            <span class="rank-item">#${index + 1}</span>
+            <span>${p.name}</span>
+            <span>${p.elevation} mdpl</span>
+        `;
+        rankingList.appendChild(rankDiv);
+    });
+}
+
+/**
+ * Menampilkan atau menyembunyikan modal.
+ */
+function toggleRankingModal(show) {
+    const modal = document.getElementById('ranking-modal');
+    if (show) {
+        // 🚨 Suara 3: Klik Buka Ranking
+        playSound('sound-ranking'); 
+
+        renderRanking(); // Render ranking sebelum menampilkan
+        modal.classList.remove('modal-hidden');
+    } else {
+        modal.classList.add('modal-hidden');
+    }
+}
+
+// ====================================================
+// --- FUNGSI RENDER AWAL DAN INISIALISASI ---
+// ====================================================
+
 function renderScoreboard() {
     const appContainer = document.getElementById('mountain-app');
     appContainer.innerHTML = ''; 
@@ -121,63 +192,43 @@ function renderScoreboard() {
     });
 }
 
-// ====================================================
-// --- FUNGSI BARU: LOGIKA RANKING DAN MODAL ---
-// ====================================================
-
-/**
- * Mengurutkan peserta berdasarkan ketinggian (tertinggi ke terendah) dan merender ke modal.
- */
-function renderRanking() {
-    // 1. Salin dan Urutkan peserta berdasarkan elevation
-    const sortedParticipants = [...participants].sort((a, b) => b.elevation - a.elevation);
-    
-    const rankingList = document.getElementById('ranking-list');
-    rankingList.innerHTML = ''; // Bersihkan daftar lama
-
-    sortedParticipants.forEach((p, index) => {
-        const rankDiv = document.createElement('div');
-        rankDiv.innerHTML = `
-            <span class="rank-item">#${index + 1}</span>
-            <span>${p.name}</span>
-            <span>${p.elevation} mdpl</span>
-        `;
-        rankingList.appendChild(rankDiv);
-    });
-}
-
-/**
- * Menampilkan atau menyembunyikan modal.
- */
-function toggleRankingModal(show) {
-    const modal = document.getElementById('ranking-modal');
-    if (show) {
-        renderRanking(); // Render ranking sebelum menampilkan
-        modal.classList.remove('modal-hidden');
-    } else {
-        modal.classList.add('modal-hidden');
+function startBGM() {
+    const bgm = document.getElementById('background-music');
+    if (bgm) {
+        bgm.volume = 0.3; // Opsional: Atur volume BGM agar tidak terlalu keras
+        bgm.play().catch(error => {
+            // Biarkan kosong, karena ini akan terjadi jika tidak ada interaksi pengguna
+            console.warn("BGM Playback Blocked:", error);
+        });
     }
 }
 
 // Panggil fungsi render saat halaman dimuat
 document.addEventListener('DOMContentLoaded', () => {
-    // Panggil renderScoreboard awal
+    // 1. Panggil renderScoreboard awal
     renderScoreboard(); 
 
-    // Tombol Show Ranking
+    // 2. Coba mulai BGM (mungkin diblokir)
+    startBGM(); 
+
+    // 3. Tombol Show Ranking
     document.getElementById('show-ranking-btn').addEventListener('click', () => {
         toggleRankingModal(true);
     });
 
-    // Tombol Close (x)
+    // 4. Tombol Close (x)
     document.querySelector('.close-btn').addEventListener('click', () => {
         toggleRankingModal(false);
     });
 
-    // Menutup modal saat klik di luar area modal
+    // 5. Menutup modal saat klik di luar area modal
     document.getElementById('ranking-modal').addEventListener('click', (e) => {
         if (e.target.id === 'ranking-modal') {
             toggleRankingModal(false);
         }
     });
+    
+    // 6. KUNCI: Pemicu BGM pada interaksi pertama
+    // Jika BGM diblokir, interaksi pertama (klik karakter atau tombol) akan memicunya.
+    document.body.addEventListener('click', startBGM, { once: true });
 });
