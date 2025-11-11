@@ -226,3 +226,50 @@ body {
     color: #4CAF50; /* Hijau MDPL */
     font-size: 16px;
 }
+
+#mute-bgm-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px; /* Posisi Tombol Mute */
+    padding: 15px 30px;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: #f44336; 
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 100; 
+    transition: background-color 0.3s;
+}
+
+#mute-bgm-btn:hover {
+    background-color: #d32f2f;
+}
+
+/* Gaya jika musik di-mute (Opsional: agar terlihat berbeda) */
+#mute-bgm-btn.muted {
+    background-color: #9e9e9e; /* Abu-abu saat mute */
+}
+
+#reset-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 200px; /* Atur posisi agar berjarak sedikit dari tombol Mute */
+    padding: 15px 30px;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: #ff9800; /* Warna Oranye untuk Reset/Peringatan */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    transition: background-color 0.3s;
+}
+
+#reset-btn:hover {
+    background-color: #e68a00;
+}

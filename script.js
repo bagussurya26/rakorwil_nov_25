@@ -1,3 +1,53 @@
+// Kunci unik untuk menyimpan data di Local Storage
+const STORAGE_KEY = 'mountain_scoreboard_participants'; 
+
+// ----------------------------------------------------
+// Fungsi untuk menyimpan data peserta ke Local Storage
+// ----------------------------------------------------
+function saveParticipants() {
+    try {
+        // Local Storage hanya bisa menyimpan string, jadi ubah array participants menjadi JSON string
+        const participantsJSON = JSON.stringify(participants);
+        localStorage.setItem(STORAGE_KEY, participantsJSON);
+        console.log("Data peserta berhasil disimpan di Local Storage.");
+    } catch (e) {
+        console.error("Gagal menyimpan data ke Local Storage:", e);
+    }
+}
+
+// ----------------------------------------------------
+// Fungsi untuk memuat data peserta dari Local Storage
+// ----------------------------------------------------
+function loadParticipants() {
+    try {
+        const participantsJSON = localStorage.getItem(STORAGE_KEY);
+        if (participantsJSON) {
+            // Ubah JSON string kembali menjadi array JavaScript (objects)
+            const loadedData = JSON.parse(participantsJSON);
+            
+            // PENTING: Gunakan data yang dimuat jika ada.
+            participants = loadedData; 
+            console.log("Data peserta berhasil dimuat dari Local Storage.");
+            return true;
+        }
+    } catch (e) {
+        console.error("Gagal memuat data dari Local Storage:", e);
+    }
+    return false; // Mengembalikan false jika tidak ada data atau terjadi error
+}
+
+function resetGame() {
+    if (confirm("Apakah Anda yakin ingin me-reset game? Semua progres pendakian akan dihapus.")) {
+        
+        // 1. Hapus data dari Local Storage
+        localStorage.removeItem(STORAGE_KEY);
+        console.log("Data peserta berhasil dihapus dari Local Storage.");
+
+        // 2. Muat ulang halaman (agar data default dimuat ulang)
+        window.location.reload(); 
+    }
+}
+
 // Ketinggian dan Visual Konstan (DATA PATEN)
 const BASE_ELEVATION = 1000; 
 const MAX_ELEVATION = 3600; 
@@ -104,6 +154,8 @@ function handleIconClick(id) {
             const newIcon = iconElement.cloneNode(true);
             iconElement.parentNode.replaceChild(newIcon, iconElement);
         }
+
+        saveParticipants();
     }
 }
 
@@ -195,16 +247,42 @@ function renderScoreboard() {
 function startBGM() {
     const bgm = document.getElementById('background-music');
     if (bgm) {
-        bgm.volume = 0.3; // Opsional: Atur volume BGM agar tidak terlalu keras
+        bgm.volume = 0.1; 
         bgm.play().catch(error => {
-            // Biarkan kosong, karena ini akan terjadi jika tidak ada interaksi pengguna
             console.warn("BGM Playback Blocked:", error);
         });
     }
 }
 
+/**
+ * Mengganti status mute BGM dan memperbarui tampilan tombol.
+ */
+function toggleBGM() {
+    const bgm = document.getElementById('background-music');
+    const btn = document.getElementById('mute-bgm-btn');
+
+    if (bgm) {
+        // Balikkan status muted
+        bgm.muted = !bgm.muted; 
+
+        // Perbarui tampilan tombol
+        if (bgm.muted) {
+            btn.textContent = '🔇 Musik';
+            btn.classList.add('muted');
+        } else {
+            btn.textContent = '🔊 Musik';
+            btn.classList.remove('muted');
+            // Jika musik di-unmute, coba putar (berguna jika BGM diblokir sebelumnya)
+            startBGM(); 
+        }
+    }
+}
+
 // Panggil fungsi render saat halaman dimuat
 document.addEventListener('DOMContentLoaded', () => {
+    // --- BARIS KUNCI: COBA MUAT DATA DARI LOCAL STORAGE ---
+    loadParticipants();
+
     // 1. Panggil renderScoreboard awal
     renderScoreboard(); 
 
@@ -231,4 +309,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. KUNCI: Pemicu BGM pada interaksi pertama
     // Jika BGM diblokir, interaksi pertama (klik karakter atau tombol) akan memicunya.
     document.body.addEventListener('click', startBGM, { once: true });
+
+    // 7. KUNCI BARU: Event listener untuk Tombol Mute BGM
+    document.getElementById('mute-bgm-btn').addEventListener('click', toggleBGM);
+
+    document.getElementById('reset-btn').addEventListener('click', resetGame);
 });
