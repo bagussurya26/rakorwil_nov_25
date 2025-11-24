@@ -51,7 +51,7 @@ function resetGame() {
 // Ketinggian dan Visual Konstan (DATA PATEN)
 const BASE_ELEVATION = 1000; 
 const MAX_ELEVATION = 3600; 
-const ELEVATION_INCREMENT = 180; 
+const ELEVATION_INCREMENT = 200; 
 
 // Visual Mapping (DATA PATEN): 
 const PIXELS_PER_100_MDPL = 40; 
@@ -314,4 +314,5 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('mute-bgm-btn').addEventListener('click', toggleBGM);
 
     document.getElementById('reset-btn').addEventListener('click', resetGame);
+
 });
